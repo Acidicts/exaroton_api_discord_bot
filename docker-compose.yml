@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Web Dashboard Service
+  dashboard:
+    build: .
+    container_name: exaroton-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    env_file:
+      - .env
+    command: npm start
+    restart: unless-stopped
+    networks:
+      - exaroton-network
+    volumes:
+      - ./logs:/app/logs
+
+  # Discord Bot Service
+  bot:
+    build: .
+    container_name: exaroton-bot
+    env_file:
+      - .env
+    command: npm run bot
+    restart: unless-stopped
+    networks:
+      - exaroton-network
+    depends_on:
+      - dashboard
+    volumes:
+      - ./logs:/app/logs
+
+networks:
+  exaroton-network:
+    driver: bridge
+
+volumes:
+  logs:
