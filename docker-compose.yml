@@ -3,7 +3,10 @@ version: '3.8'
 services:
   # Web Dashboard Service
   dashboard:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: exaroton-dashboard:latest
     container_name: exaroton-dashboard
     ports:
       - "3000:3000"
@@ -17,11 +20,14 @@ services:
     networks:
       - exaroton-network
     volumes:
-      - ./logs:/app/logs
+      - ./logs/dashboard:/app/logs
 
-  # Discord Bot Service
+  # Discord Bot Service (Separate Instance)
   bot:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    image: exaroton-bot:latest
     container_name: exaroton-bot
     env_file:
       - .env
@@ -29,10 +35,8 @@ services:
     restart: unless-stopped
     networks:
       - exaroton-network
-    depends_on:
-      - dashboard
     volumes:
-      - ./logs:/app/logs
+      - ./logs/bot:/app/logs
 
 networks:
   exaroton-network:

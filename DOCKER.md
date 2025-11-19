@@ -8,17 +8,30 @@ This guide explains how to run the Exaroton Control Panel using Docker.
 - Docker Compose installed (version 2.0 or later)
 - Your `.env` file configured with all required tokens and settings
 
+## Architecture
+
+The application uses **separate Docker images** for each service:
+
+- **Dashboard Image** (`Dockerfile`): Web dashboard on port 3000
+- **Bot Image** (`Dockerfile.bot`): Discord bot (no ports needed)
+
+Each service runs in its own isolated container with independent logs and resources.
+
 ## Quick Start
 
-### 1. Build the Docker Image
+### 1. Build Both Images
 
 ```bash
-docker build -t exaroton-control-panel .
+docker-compose build
 ```
+
+This builds two separate images:
+- `exaroton-dashboard:latest`
+- `exaroton-bot:latest`
 
 ### 2. Run with Docker Compose (Recommended)
 
-This will start both the web dashboard and Discord bot:
+Start both services in separate containers:
 
 ```bash
 docker-compose up -d
@@ -54,21 +67,30 @@ docker-compose down
 ### Web Dashboard Only
 
 ```bash
+# Build dashboard image
+docker build -t exaroton-dashboard -f Dockerfile .
+
+# Run dashboard container
 docker run -d \
   --name exaroton-dashboard \
   -p 3000:3000 \
   --env-file .env \
-  exaroton-control-panel
+  -v ./logs/dashboard:/app/logs \
+  exaroton-dashboard
 ```
 
 ### Discord Bot Only
 
 ```bash
+# Build bot image
+docker build -t exaroton-bot -f Dockerfile.bot .
+
+# Run bot container
 docker run -d \
   --name exaroton-bot \
   --env-file .env \
-  exaroton-control-panel \
-  npm run bot
+  -v ./logs/bot:/app/logs \
+  exaroton-bot
 ```
 
 ## Environment Variables
@@ -157,12 +179,26 @@ services:
 
 ## Updating
 
-### Rebuild and Restart
+### Rebuild and Restart Both Services
 
 ```bash
 docker-compose down
 docker-compose build --no-cache
 docker-compose up -d
+```
+
+### Update Specific Service
+
+```bash
+# Update dashboard only
+docker-compose stop dashboard
+docker-compose build --no-cache dashboard
+docker-compose up -d dashboard
+
+# Update bot only
+docker-compose stop bot
+docker-compose build --no-cache bot
+docker-compose up -d bot
 ```
 
 ### Pull Updates from Git
