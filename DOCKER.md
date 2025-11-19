@@ -10,24 +10,27 @@ This guide explains how to run the Exaroton Control Panel using Docker.
 
 ## Architecture
 
-The application uses **separate Docker images** for each service:
+The application uses a **unified Docker image** that can run in two modes:
 
-- **Dashboard Image** (`Dockerfile`): Web dashboard on port 3000
-- **Bot Image** (`Dockerfile.bot`): Discord bot (no ports needed)
+- **API Mode** (`RUN_MODE=api`): Web dashboard and REST API on port 3000
+- **Bot Mode** (`RUN_MODE=bot`): Discord bot (no ports needed)
 
-Each service runs in its own isolated container with independent logs and resources.
+The same Docker image (`exaroton-app:latest`) is used for both services. The `RUN_MODE` environment variable determines which application starts. This provides:
+- Single image to build and maintain
+- Consistent dependencies across services
+- Smaller total disk usage
+- Simplified updates and deployment
 
 ## Quick Start
 
-### 1. Build Both Images
+### 1. Build the Image
 
 ```bash
 docker-compose build
 ```
 
-This builds two separate images:
-- `exaroton-dashboard:latest`
-- `exaroton-bot:latest`
+This builds a single unified image:
+- `exaroton-app:latest`
 
 ### 2. Run with Docker Compose (Recommended)
 
@@ -67,30 +70,36 @@ docker-compose down
 ### Web Dashboard Only
 
 ```bash
-# Build dashboard image
-docker build -t exaroton-dashboard -f Dockerfile .
+docker-compose up -d dashboard
+```
 
-# Run dashboard container
+Or run standalone:
+
+```bash
 docker run -d \
   --name exaroton-dashboard \
   -p 3000:3000 \
   --env-file .env \
-  -v ./logs/dashboard:/app/logs \
-  exaroton-dashboard
+  -e RUN_MODE=api \
+  -v $(pwd)/logs/dashboard:/app/logs \
+  exaroton-app:latest
 ```
 
 ### Discord Bot Only
 
 ```bash
-# Build bot image
-docker build -t exaroton-bot -f Dockerfile.bot .
+docker-compose up -d bot
+```
 
-# Run bot container
+Or run standalone:
+
+```bash
 docker run -d \
   --name exaroton-bot \
   --env-file .env \
-  -v ./logs/bot:/app/logs \
-  exaroton-bot
+  -e RUN_MODE=bot \
+  -v $(pwd)/logs/bot:/app/logs \
+  exaroton-app:latest
 ```
 
 ## Environment Variables
@@ -113,6 +122,10 @@ DISCORD_REQUIRED_ROLE=Bot
 DISCORD_START_ROLE=Approved
 TEMPBAN_COMMAND_FORMAT=tempban {player} 30m {reason}
 ```
+
+**Docker-specific variables** (set in `docker-compose.yml`, not in `.env`):
+- `RUN_MODE`: Set to `api` for dashboard or `bot` for Discord bot
+- This variable determines which application the container runs
 
 ## Port Mapping
 
@@ -179,35 +192,33 @@ services:
 
 ## Updating
 
-### Rebuild and Restart Both Services
+### Rebuild and Restart All Services
 
 ```bash
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
-```
-
-### Update Specific Service
-
-```bash
-# Update dashboard only
-docker-compose stop dashboard
-docker-compose build --no-cache dashboard
-docker-compose up -d dashboard
-
-# Update bot only
-docker-compose stop bot
-docker-compose build --no-cache bot
-docker-compose up -d bot
-```
-
-### Pull Updates from Git
-
-```bash
+# Pull latest code
 git pull
+
+# Rebuild the image
+docker-compose build --no-cache
+
+# Restart both services
 docker-compose down
-docker-compose build
 docker-compose up -d
+```
+
+### Restart Individual Service
+
+Since both services share the same image, you only need to rebuild once:
+
+```bash
+# Rebuild the shared image
+docker-compose build --no-cache
+
+# Restart dashboard only
+docker-compose restart dashboard
+
+# Or restart bot only
+docker-compose restart bot
 ```
 
 ## Troubleshooting

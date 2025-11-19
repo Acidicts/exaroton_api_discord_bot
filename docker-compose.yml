@@ -6,32 +6,33 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: exaroton-dashboard:latest
+    image: exaroton-app:latest
     container_name: exaroton-dashboard
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - RUN_MODE=api
     env_file:
       - .env
-    command: npm start
     restart: unless-stopped
     networks:
       - exaroton-network
     volumes:
       - ./logs/dashboard:/app/logs
 
-  # Discord Bot Service (Separate Instance)
+  # Discord Bot Service
   bot:
     build:
       context: .
-      dockerfile: Dockerfile.bot
-    image: exaroton-bot:latest
+      dockerfile: Dockerfile
+    image: exaroton-app:latest
     container_name: exaroton-bot
+    environment:
+      - RUN_MODE=bot
     env_file:
       - .env
-    command: npm run bot
     restart: unless-stopped
     networks:
       - exaroton-network
@@ -41,6 +42,3 @@ services:
 networks:
   exaroton-network:
     driver: bridge
-
-volumes:
-  logs:

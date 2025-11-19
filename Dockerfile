@@ -13,12 +13,13 @@ RUN npm ci --only=production
 # Copy application code
 COPY . .
 
-# Expose port for web dashboard
+# Create logs directory
+RUN mkdir -p logs
+
+# Expose port for web dashboard (only used when RUN_MODE=api)
 EXPOSE 3000
 
-# Create volume mount point for environment variables
-VOLUME ["/app/.env"]
-
-# Default command runs the web server
-# Use docker-compose or override to run the bot
-CMD ["npm", "start"]
+# Start script that checks RUN_MODE environment variable from .env
+# RUN_MODE=api -> runs npm start (web dashboard)
+# RUN_MODE=bot -> runs npm run bot (Discord bot)
+CMD ["node", "start.js"]
