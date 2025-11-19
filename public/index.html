@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exaroton Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>🎮 Exaroton</h1>
+                <span id="accountName" class="account-name">Loading...</span>
+            </div>
+            <div class="header-right">
+                <span id="accountCredits" class="credits">--</span>
+                <span id="wsStatus" class="ws-status">●</span>
+            </div>
+        </header>
+
+        <main>
+            <!-- Server Selection & Controls -->
+            <section class="card top-bar">
+                <div class="server-selector">
+                    <select id="serverSelect" class="server-select">
+                        <option value="">Select Server...</option>
+                    </select>
+                    <button id="refreshServers" class="btn-icon" title="Refresh">🔄</button>
+                </div>
+                <div class="server-info">
+                    <span id="serverStatus" class="status-badge">--</span>
+                    <span id="serverAddress" class="server-address">--</span>
+                </div>
+                <div class="server-controls">
+                    <button id="startBtn" class="btn btn-sm btn-success" title="Start">▶️</button>
+                    <button id="stopBtn" class="btn btn-sm btn-danger" title="Stop">⏹️</button>
+                    <button id="restartBtn" class="btn btn-sm btn-warning" title="Restart">🔄</button>
+                </div>
+            </section>
+
+            <div class="layout">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- Console -->
+                    <section class="card console-card">
+                        <div class="card-header">
+                            <h3>Console</h3>
+                            <div class="metrics-inline">
+                                <span class="metric-badge">TPS: <strong id="tps">--</strong></span>
+                                <span class="metric-badge">Heap: <strong id="heapUsage">--</strong></span>
+                                <span class="metric-badge">Players: <strong id="onlinePlayers">--</strong></span>
+                            </div>
+                        </div>
+                        <div id="console" class="console"></div>
+                        <div class="console-input">
+                            <input type="text" id="commandInput" placeholder="Enter command..." />
+                            <button id="sendCommand" class="btn btn-sm btn-primary">Send</button>
+                        </div>
+                    </section>
+
+                    <!-- Quick Settings -->
+                    <section class="card settings-card">
+                        <h3>Quick Settings</h3>
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <label>RAM (GB)</label>
+                                <div class="input-group">
+                                    <input type="number" id="ramInput" min="2" max="16" step="1" />
+                                    <button id="setRamBtn" class="btn btn-xs">Set</button>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <label>MOTD</label>
+                                <div class="input-group">
+                                    <input type="text" id="motdInput" maxlength="59" placeholder="Server MOTD..." />
+                                    <button id="setMotdBtn" class="btn btn-xs">Set</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right Column -->
+                <div class="right-column">
+                    <!-- Server Details -->
+                    <section class="card details-card">
+                        <h3>Server Details</h3>
+                        <div class="details-list">
+                            <div class="detail-item">
+                                <span class="label">Players:</span>
+                                <span id="serverPlayers">--</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">RAM:</span>
+                                <span id="serverRam">--</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Software:</span>
+                                <span id="serverSoftware">--</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">MOTD:</span>
+                                <span id="serverMotd">--</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Player Management -->
+                    <section class="card players-card">
+                        <h3>Player Lists</h3>
+                        <div class="player-tabs">
+                            <button class="tab-btn active" data-list="whitelist">Whitelist</button>
+                            <button class="tab-btn" data-list="ops">Ops</button>
+                            <button class="tab-btn" data-list="ban">Bans</button>
+                        </div>
+                        <div id="playerList" class="player-list"></div>
+                        <div class="player-input">
+                            <input type="text" id="playerNameInput" placeholder="Player name..." />
+                            <button id="addPlayerBtn" class="btn btn-xs btn-primary">Add</button>
+                        </div>
+                    </section>
+
+                    <!-- Logs -->
+                    <section class="card logs-card">
+                        <h3>Logs</h3>
+                        <div class="logs-buttons">
+                            <button id="viewLogsBtn" class="btn btn-sm btn-secondary">View</button>
+                            <button id="shareLogsBtn" class="btn btn-sm btn-secondary">Share</button>
+                        </div>
+                        <div id="logsContent" class="logs-content"></div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

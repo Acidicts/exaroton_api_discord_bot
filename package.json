@@ -1,0 +1,30 @@
+{
+  "name": "exaroton-control-panel",
+  "version": "1.0.0",
+  "description": "Node.js API system with control dashboard for exaroton server provider",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "bot": "node src/bot.js",
+    "bot:dev": "node --watch src/bot.js"
+  },
+  "keywords": [
+    "exaroton",
+    "minecraft",
+    "server",
+    "dashboard",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "discord.js": "^14.25.0",
+    "dotenv": "^16.3.1",
+    "exaroton": "^2.0.0",
+    "express": "^4.21.2",
+    "ws": "^8.14.2"
+  }
+}
